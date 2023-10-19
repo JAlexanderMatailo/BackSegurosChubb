@@ -219,6 +219,84 @@ namespace BackSegurosChubb.Service
         #endregion
 
         #region Poliza
+        public bool SetPoliza(int idAsegurados, int idSeguro)
+        {
+            bool registrado = false;
+            using (var context = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    Poliza poliza = new Poliza
+                    {
+                        IdAsegurados = idAsegurados,
+                        IdSeguros = idSeguro,
+                        Estado = "A"
+                    };
+
+                    _context.Polizas.Add(poliza);
+                    _context.SaveChanges();
+                    context.Commit();
+                    registrado = true;
+                }
+                catch (Exception)
+                {
+                    context.Rollback();
+                    throw;
+                }
+            }
+            return registrado;
+        }
+
+        public List<PolizaVM> GetaAllPoliza()
+        {
+            List<PolizaVM> Polizas = new List<PolizaVM>();
+            PolizaVM poliza = new PolizaVM();
+            using (var context = _context.Database.BeginTransaction())
+            {
+                var seguros = (
+                    from pol in _context.Polizas
+                    join per in _context.Personas on pol.IdAsegurados equals per.IdAsegurados
+                    join seg in _context.Seguros on pol.IdSeguros equals seg.IdSeguros
+                    where (pol.Estado == "A")
+                    select new
+                    {
+                        pol.IdSeguros,
+                        pol.IdAsegurados,
+                        pol.IdPoliza,
+                        per.Cedula,
+                        per.NombreCliente,
+                        seg.NombreSeguro,
+                        seg.Codigo,
+                        seg.SumaAsegurada,
+                        seg.Prima,
+                        pol.Estado
+
+                    }
+                ).ToList();
+                if (seguros != null)
+                {
+                    foreach (var seguro in seguros)
+                    {
+                        poliza = new PolizaVM
+                        {
+                            IdPoliza = seguro.IdPoliza,
+                            IdAsegurados = seguro.IdAsegurados,
+                            IdSeguros = seguro.IdSeguros,
+                            cedulaPersona = seguro.Cedula,
+                            NombrePersona = seguro.NombreCliente,
+                            DescricionSeguro = seguro.NombreSeguro,
+                            CodigoSeguro = seguro.Codigo,
+                            ValorAsegurado = Convert.ToDecimal(seguro.SumaAsegurada),
+                            Prima = Convert.ToDecimal(seguro.Prima),
+                            Estado = seguro.Estado
+                        };
+                        Polizas.Add(poliza);
+                    }
+
+                }
+            }
+            return Polizas;
+        }
 
 
         #endregion

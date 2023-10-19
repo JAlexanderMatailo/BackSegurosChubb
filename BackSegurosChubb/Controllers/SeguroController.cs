@@ -1,4 +1,5 @@
 ﻿using BackSegurosChubb.Interface;
+using BackSegurosChubb.Models;
 using BackSegurosChubb.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
@@ -54,6 +55,15 @@ namespace BackSegurosChubb.Controllers
             return new JsonResult(result);
         }
 
+        #endregion
+
+        #region Polizas
+        [HttpPost("SetPoliza")]
+        public IActionResult SetPoliza(int idAsegurados, int idSeguro)
+        {
+            var result = _seguro.SetPoliza(idAsegurados, idSeguro);
+            return new JsonResult(result);
+        }
         #endregion
     }
 }

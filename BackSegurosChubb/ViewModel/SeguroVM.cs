@@ -12,6 +12,5 @@
 
         public double Prima { get; set; }
 
-        public string Estado { get; set; }
     }
 }

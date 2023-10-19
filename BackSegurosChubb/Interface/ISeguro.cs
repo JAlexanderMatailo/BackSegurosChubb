@@ -4,6 +4,6 @@ namespace BackSegurosChubb.Interface
 {
     public interface ISeguro
     {
-        bool SettSeguros(SeguroVM seguro);
+        bool SetSeguros(SeguroVM seguro);
     }
 }

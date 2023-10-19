@@ -186,6 +186,36 @@ namespace BackSegurosChubb.Service
             }
         }
 
+        public bool DeleteSeguro(int id)
+        {
+            var polizaExiste = _context.Polizas.Where(s => s.IdSeguros == id).Any();
+            var seguroExiste = _context.Seguros.FirstOrDefault(x => x.IdSeguros == id && x.Estado == "A");
+            bool eliminado = false;
+            using (var context = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    if (!polizaExiste)
+                    {
+                        if (seguroExiste != null)
+                        {
+                            seguroExiste.Estado = "I"; //inactivo
+
+                            _context.SaveChanges();
+                            context.Commit();
+                            eliminado = true;
+
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    context.Rollback();
+                    eliminado = false;
+                }
+            }
+            return eliminado;
+        }
         #endregion
     }
 }

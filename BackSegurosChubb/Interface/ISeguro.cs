@@ -9,5 +9,6 @@ namespace BackSegurosChubb.Interface
         SeguroVM GetSeguroById(int id);
         SeguroVM GetSeguroByCode(string codigo);
         bool UpdateSeguro(SeguroVM seguroVM);
+        bool DeleteSeguro(int id);
     }
 }

@@ -47,6 +47,13 @@ namespace BackSegurosChubb.Controllers
             return new JsonResult(result);
         }
 
+        [HttpPost("DeleteSeguro")]
+        public IActionResult DeleteSeguro(int id)
+        {
+            var result = _seguro.DeleteSeguro(id);
+            return new JsonResult(result);
+        }
+
         #endregion
     }
 }

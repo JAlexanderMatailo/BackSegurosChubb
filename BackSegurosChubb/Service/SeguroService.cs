@@ -1,6 +1,7 @@
 ﻿using BackSegurosChubb.Interface;
 using BackSegurosChubb.Models;
 using BackSegurosChubb.ViewModel;
+using System.Text.RegularExpressions;
 
 namespace BackSegurosChubb.Service
 {
@@ -13,38 +14,55 @@ namespace BackSegurosChubb.Service
 
         }
         #region Seguro
+        public bool EsCodigoValido(string codigo)
+        {
+            if (Regex.IsMatch(codigo, "^[A-Za-z0-9]{6}$"))
+            {
+                return true;
+            }
+            return false;
+        }
         public bool SetSeguros(SeguroVM seguro)
         {
-            var existe = _context.Seguros.Where(x => x.Codigo == seguro.Codigo).Any();
-            bool registrado = false;
-            if(!existe)
+            if (EsCodigoValido(seguro.Codigo))
             {
-                using (var context = _context.Database.BeginTransaction())
+                var existe = _context.Seguros.Where(x => x.Codigo == seguro.Codigo).Any();
+                bool registrado = false;
+                if (!existe)
                 {
-                    try
+                    using (var context = _context.Database.BeginTransaction())
                     {
-                        Seguro seguros = new Seguro
+                        try
                         {
-                            NombreSeguro = seguro.NombreSeguro,
-                            Codigo = seguro.Codigo,
-                            SumaAsegurada = seguro.SumaAsegurada,
-                            Prima = seguro.Prima,
-                            Estado = "A"
+                            Seguro seguros = new Seguro
+                            {
+                                NombreSeguro = seguro.NombreSeguro,
+                                Codigo = seguro.Codigo,
+                                SumaAsegurada = seguro.SumaAsegurada,
+                                Prima = seguro.Prima,
+                                Estado = "A"
 
-                        };
-                        _context.Seguros.Add(seguros);
-                        _context.SaveChanges();
+                            };
+                            _context.Seguros.Add(seguros);
+                            _context.SaveChanges();
 
-                        context.Commit();
-                        registrado = true;
-                    }catch (Exception ex)
-                    {
-                        context.Rollback();
-                        registrado = false;
+                            context.Commit();
+                            registrado = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            context.Rollback();
+                            registrado = false;
+                        }
+
                     }
                 }
+                return registrado;
             }
-            return registrado;
+            else
+            {
+                return false;
+            }
         }
 
         public List<SeguroVM> GetAllSeguro()
@@ -131,35 +149,43 @@ namespace BackSegurosChubb.Service
             return seguroVM;
         }
 
-        public bool UpdateSeguro(SeguroVM seguroVM)
+        public bool UpdateSeguro(SeguroVM seguro)
         {
-            var seguroExiste = _context.Seguros.Where(x => x.IdSeguros == seguroVM.IdSeguros).FirstOrDefault();
-            bool registro = false;
-            if (seguroExiste != null)
+            if (EsCodigoValido(seguro.Codigo))
             {
-                using(var context = _context.Database.BeginTransaction())
+                var seguroExiste = _context.Seguros.Where(x => x.IdSeguros == seguro.IdSeguros).FirstOrDefault();
+                bool registro = false;
+                if (seguroExiste != null)
                 {
-                    try
+                    using (var context = _context.Database.BeginTransaction())
                     {
-                        seguroExiste.NombreSeguro = seguroVM.NombreSeguro;
-                        seguroExiste.Codigo = seguroVM.Codigo;
-                        seguroExiste.SumaAsegurada = seguroVM.SumaAsegurada;
-                        seguroExiste.Prima = seguroVM.Prima;
-                        seguroExiste.Estado = "A";
+                        try
+                        {
+                            seguroExiste.NombreSeguro = seguro.NombreSeguro;
+                            seguroExiste.Codigo = seguro.Codigo;
+                            seguroExiste.SumaAsegurada = seguro.SumaAsegurada;
+                            seguroExiste.Prima = seguro.Prima;
+                            seguroExiste.Estado = "A";
 
-                        _context.SaveChanges();
-                        context.Commit();
-                        registro = true;
-                    }
-                    catch (Exception)
-                    {
-                        context.Rollback();
-                        registro = false;
+                            _context.SaveChanges();
+                            context.Commit();
+                            registro = true;
+                        }
+                        catch (Exception)
+                        {
+                            context.Rollback();
+                            registro = false;
+                        }
                     }
                 }
+                return registro;
             }
-            return registro;
+            else
+            {
+                return false;
+            }
         }
+
         #endregion
     }
 }

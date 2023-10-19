@@ -58,8 +58,8 @@ namespace BackSegurosChubb.Service
         public List<PersonaVM> GetAllPersona()
         {
             List<PersonaVM> listPersonas = new List<PersonaVM>();
-            //var persona = _context.Personas.Where(x => x.Estado == "A").ToList();
-            var persona = _context.Personas.ToList();
+            var persona = _context.Personas.Where(x => x.Estado == "A").ToList();
+            //var persona = _context.Personas.ToList();
             foreach (var personas in persona)
             {
                 try

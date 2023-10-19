@@ -56,10 +56,36 @@ namespace BackSegurosChubb.Service
             }
         }
 
+        public List<PersonaVM> GetAllPersona()
+        {
+            List<PersonaVM> listPersonas = new List<PersonaVM>();
+            var persona = _context.Personas.Where(x => x.Estado == "A").ToList();
+            foreach (var personas in persona)
+            {
+                try
+                {
+                    PersonaVM registro = new PersonaVM
+                    {
+                        IdAsegurados = personas.IdAsegurados,
+                        Cedula = personas.Cedula,
+                        NombreCliente = personas.NombreCliente,
+                        Telefono = personas.Telefono,
+                        Edad = personas.Edad
+                    };
+                    listPersonas.Add(registro);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error al consultar clientes: " + ex.Message);
+                }
+            }
+            return listPersonas;
+        }
 
 
 
 
-        
+
+
     }
 }

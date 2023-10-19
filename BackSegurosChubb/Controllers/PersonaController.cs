@@ -21,7 +21,12 @@ namespace BackSegurosChubb.Controllers
             return new JsonResult(result);
         }
 
-
+        [HttpGet("GetAllPersona")]
+        public IActionResult GetAllPersona()
+        {
+            var result = _persona.GetAllPersona();
+            return new JsonResult(result);
+        }
 
     }
 }

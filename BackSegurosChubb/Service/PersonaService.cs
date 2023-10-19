@@ -58,7 +58,8 @@ namespace BackSegurosChubb.Service
         public List<PersonaVM> GetAllPersona()
         {
             List<PersonaVM> listPersonas = new List<PersonaVM>();
-            var persona = _context.Personas.Where(x => x.Estado == "A").ToList();
+            //var persona = _context.Personas.Where(x => x.Estado == "A").ToList();
+            var persona = _context.Personas.ToList();
             foreach (var personas in persona)
             {
                 try
@@ -140,9 +141,9 @@ namespace BackSegurosChubb.Service
             }
         }
 
-        public bool EliminarPersona(int id)
+        public bool DeletePersona(int idPersona)
         {
-            var personaExiste = _context.Personas.FirstOrDefault(x => x.IdAsegurados == id);
+            var personaExiste = _context.Personas.FirstOrDefault(x => x.IdAsegurados == idPersona);
             bool eliminado = false;
             using (var context = _context.Database.BeginTransaction())
             {

@@ -8,5 +8,6 @@ namespace BackSegurosChubb.Interface
         List<PersonaVM> GetAllPersona();
         PersonaVM GetPersonaByCedula(string cedula);
         bool UpdatePersona(PersonaVM persona);
+        bool DeletePersona(int idPersona);
     }
 }

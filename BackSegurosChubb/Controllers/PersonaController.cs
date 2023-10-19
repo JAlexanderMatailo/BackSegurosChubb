@@ -40,6 +40,11 @@ namespace BackSegurosChubb.Controllers
             var result = _persona.UpdatePersona(persona);
             return new JsonResult(result);
         }
-
+        [HttpPost("DeletePersona")]
+        public IActionResult DeletePersona(int id)
+        {
+            var result = _persona.DeletePersona(id);
+            return new JsonResult(result);
+        }
     }
 }

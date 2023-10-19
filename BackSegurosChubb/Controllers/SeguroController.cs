@@ -20,6 +20,13 @@ namespace BackSegurosChubb.Controllers
             return new JsonResult(result);
         }
 
+        [HttpPost("UpdateSeguro")]
+        public IActionResult UpdateSeguro(SeguroVM seguro)
+        {
+            var result = _seguro.UpdateSeguro(seguro);
+            return new JsonResult(result);
+        }
+
         [HttpGet("GetAllSeguro")]
         public IActionResult GetAllSeguro() { 
             var result = _seguro.GetAllSeguro();

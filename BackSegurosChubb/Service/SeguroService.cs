@@ -118,7 +118,7 @@ namespace BackSegurosChubb.Service
                             NombreSeguro = seguroId.NombreSeguro,
                             Codigo = seguroId.Codigo,
                             SumaAsegurada = seguroId.SumaAsegurada,
-                            Prima = seguroId.Prima
+                            Prima = seguroId.Prima                            
                         };
                     }
                     catch (Exception ex)
@@ -131,6 +131,35 @@ namespace BackSegurosChubb.Service
             return seguroVM;
         }
 
+        public bool UpdateSeguro(SeguroVM seguroVM)
+        {
+            var seguroExiste = _context.Seguros.Where(x => x.IdSeguros == seguroVM.IdSeguros).FirstOrDefault();
+            bool registro = false;
+            if (seguroExiste != null)
+            {
+                using(var context = _context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        seguroExiste.NombreSeguro = seguroVM.NombreSeguro;
+                        seguroExiste.Codigo = seguroVM.Codigo;
+                        seguroExiste.SumaAsegurada = seguroVM.SumaAsegurada;
+                        seguroExiste.Prima = seguroVM.Prima;
+                        seguroExiste.Estado = "A";
+
+                        _context.SaveChanges();
+                        context.Commit();
+                        registro = true;
+                    }
+                    catch (Exception)
+                    {
+                        context.Rollback();
+                        registro = false;
+                    }
+                }
+            }
+            return registro;
+        }
         #endregion
     }
 }

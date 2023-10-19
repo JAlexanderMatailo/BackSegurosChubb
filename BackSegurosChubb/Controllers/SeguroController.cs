@@ -19,6 +19,27 @@ namespace BackSegurosChubb.Controllers
             var result = _seguro.SetSeguros(seguro);
             return new JsonResult(result);
         }
+
+        [HttpGet("GetAllSeguro")]
+        public IActionResult GetAllSeguro() { 
+            var result = _seguro.GetAllSeguro();
+            return new JsonResult(result);
+        }
+
+        [HttpGet("GetSeguroById")]
+        public IActionResult GetSeguroById(int id)
+        {
+            var result = _seguro.GetSeguroById(id);
+            return new JsonResult(result);
+        }
+
+        [HttpGet("GatSeguroByCode")]
+        public IActionResult GetSeguroByCode(string codigo)
+        {
+            var result = _seguro.GetSeguroByCode(codigo);
+            return new JsonResult(result);
+        }
+
         #endregion
     }
 }

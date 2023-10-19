@@ -12,7 +12,7 @@ namespace BackSegurosChubb.Service
             _context = context;
 
         }
-        
+        #region Seguro
         public bool SetSeguros(SeguroVM seguro)
         {
             var existe = _context.Seguros.Where(x => x.Codigo == seguro.Codigo).Any();
@@ -40,12 +40,97 @@ namespace BackSegurosChubb.Service
                     }catch (Exception ex)
                     {
                         context.Rollback();
-                        Console.WriteLine("Error al registrar: " + ex.ToString());
                         registrado = false;
                     }
                 }
             }
             return registrado;
         }
+
+        public List<SeguroVM> GetAllSeguro()
+        {
+            List<SeguroVM> listaSeguros = new List<SeguroVM>();
+            //var seguros = _context.Seguros.Where(x => x.Estado == "A").ToList();
+            var seguros = _context.Seguros.ToList();
+            foreach (var seguro in seguros)
+            {
+                try
+                {
+                    SeguroVM registro = new SeguroVM
+                    {
+                        IdSeguros = seguro.IdSeguros,
+                        NombreSeguro = seguro.NombreSeguro,
+                        Codigo = seguro.Codigo,
+                        SumaAsegurada = seguro.SumaAsegurada,
+                        Prima = seguro.Prima
+                    };
+                    listaSeguros.Add(registro);
+                }catch (Exception ex)
+                {
+                    Console.WriteLine("Error al consultar seguros: " + ex.Message);
+                }
+                
+            }
+            return listaSeguros;
+        }
+
+        public SeguroVM GetSeguroById(int id)
+        {
+            SeguroVM seguroVM = null;
+            var seguroId = _context.Seguros.Where(x => x.IdSeguros == id && x.Estado == "A").FirstOrDefault();
+            if (seguroId != null)
+            {
+                using (var context = _context)
+                {
+                    try
+                    {
+                        seguroVM = new SeguroVM
+                        {
+                            IdSeguros = seguroId.IdSeguros,
+                            NombreSeguro = seguroId.NombreSeguro,
+                            Codigo = seguroId.Codigo,
+                            SumaAsegurada = seguroId.SumaAsegurada,
+                            Prima = seguroId.Prima
+                        };
+                    }catch(Exception ex)
+                    {
+                        Console.WriteLine("Error al consultar por el id del seguro: " + ex.Message);
+                    }
+                }
+            }
+
+            return seguroVM;
+        }
+
+        public SeguroVM GetSeguroByCode(string codigo)
+        {
+            SeguroVM seguroVM = null;
+            var seguroId = _context.Seguros.Where(x => x.Codigo == codigo && x.Estado == "A").FirstOrDefault();
+            if (seguroId != null)
+            {
+                using (var context = _context)
+                {
+                    try
+                    {
+                        seguroVM = new SeguroVM
+                        {
+                            IdSeguros = seguroId.IdSeguros,
+                            NombreSeguro = seguroId.NombreSeguro,
+                            Codigo = seguroId.Codigo,
+                            SumaAsegurada = seguroId.SumaAsegurada,
+                            Prima = seguroId.Prima
+                        };
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error al consultar por codigo del seguro: " + ex.Message);
+                    }
+                }
+            }
+
+            return seguroVM;
+        }
+
+        #endregion
     }
 }

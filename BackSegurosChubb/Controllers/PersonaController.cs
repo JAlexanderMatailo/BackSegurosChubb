@@ -27,6 +27,19 @@ namespace BackSegurosChubb.Controllers
             var result = _persona.GetAllPersona();
             return new JsonResult(result);
         }
+        [HttpGet("GetPersonaByCedula")]
+        public IActionResult GetPersonaByCedula(string cedula)
+        {
+            var result = _persona.GetPersonaByCedula(cedula);
+            return new JsonResult(result);
+        }
+
+        [HttpPost("UpdatePersona")]
+        public IActionResult UpdatePersona(PersonaVM persona)
+        {
+            var result = _persona.UpdatePersona(persona);
+            return new JsonResult(result);
+        }
 
     }
 }

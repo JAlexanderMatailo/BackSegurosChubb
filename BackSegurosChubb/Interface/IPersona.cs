@@ -6,5 +6,7 @@ namespace BackSegurosChubb.Interface
     {
         bool SetPersona(PersonaVM persona);
         List<PersonaVM> GetAllPersona();
+        PersonaVM GetPersonaByCedula(string cedula);
+        bool UpdatePersona(PersonaVM persona);
     }
 }

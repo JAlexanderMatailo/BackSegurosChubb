@@ -20,7 +20,7 @@ namespace BackSegurosChubb.Service
         {
             if (EsCedulaValido(persona.Cedula))
             {
-                var existe = _context.Personas.Where(x => x.IdAsegurados == persona.IdAsegurados).Any();
+                var existe = _context.Personas.Where(x => x.Cedula == persona.Cedula).Any();
                 bool registrado = true;
                 if (!existe)
                 {
@@ -55,7 +55,6 @@ namespace BackSegurosChubb.Service
                 return false;
             }
         }
-
         public List<PersonaVM> GetAllPersona()
         {
             List<PersonaVM> listPersonas = new List<PersonaVM>();
@@ -82,9 +81,90 @@ namespace BackSegurosChubb.Service
             return listPersonas;
         }
 
+        public PersonaVM GetPersonaByCedula(string cedula)
+        {
+            PersonaVM persona = null;
+            var personaId = _context.Personas.Where(x => x.Cedula == cedula && x.Estado == "A").FirstOrDefault();
+            using (var context = _context.Database.BeginTransaction())
+            {
+                if (personaId != null)
+                {
+                    persona = new PersonaVM
+                    {
+                        IdAsegurados = personaId.IdAsegurados,
+                        Cedula = personaId.Cedula,
+                        NombreCliente = personaId.NombreCliente,
+                        Telefono = personaId.Telefono,
+                        Edad = personaId.Edad
+                    };
+                }
+            }
+            return persona;
+        }
 
+        public bool UpdatePersona(PersonaVM persona)
+        {
+            if (EsCedulaValido(persona.Cedula))
+            {
+                var personaExiste = _context.Personas.Where(x => x.IdAsegurados == persona.IdAsegurados).FirstOrDefault();
+                bool registro = false;
+                if (personaExiste != null)
+                {
+                    using (var context = _context.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            personaExiste.Cedula = persona.Cedula;
+                            personaExiste.NombreCliente = persona.NombreCliente;
+                            personaExiste.Telefono = persona.Telefono;
+                            personaExiste.Edad = persona.Edad;
+                            personaExiste.Estado = "A";
 
+                            _context.SaveChanges();
+                            context.Commit();
+                            registro = true;
 
+                        }
+                        catch (Exception ex)
+                        {
+                            context.Rollback();
+                            registro = false;
+                        }
+                    }
+                }
+                return registro;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool EliminarPersona(int id)
+        {
+            var personaExiste = _context.Personas.FirstOrDefault(x => x.IdAsegurados == id);
+            bool eliminado = false;
+            using (var context = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    if (personaExiste != null)
+                    {
+                        personaExiste.Estado = "I";
+
+                        _context.SaveChanges();
+                        context.Commit();
+                        eliminado = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    context.Rollback();
+                    eliminado = false;
+                }
+            }
+            return eliminado;
+        }
 
 
     }

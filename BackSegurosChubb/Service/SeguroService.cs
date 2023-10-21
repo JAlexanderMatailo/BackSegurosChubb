@@ -220,7 +220,6 @@ namespace BackSegurosChubb.Service
         #endregion
 
         #region Poliza
-        //public bool SetPoliza(int idAsegurados, int idSeguro)
         public bool SetPoliza(SetPolizas setPolizas)
         {
             bool registrado = false;

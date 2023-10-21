@@ -41,7 +41,7 @@ namespace BackSegurosChubb.Service
                             context.Commit();
                             registrado = true;
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                             context.Rollback();
                             registrado = false;
@@ -126,7 +126,7 @@ namespace BackSegurosChubb.Service
                             registro = true;
 
                         }
-                        catch (Exception ex)
+                        catch (Exception )
                         {
                             context.Rollback();
                             registro = false;
@@ -158,7 +158,7 @@ namespace BackSegurosChubb.Service
                         eliminado = true;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception )
                 {
                     context.Rollback();
                     eliminado = false;

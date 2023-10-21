@@ -14,8 +14,9 @@ namespace BackSegurosChubb.Interface
         #endregion
 
         #region Polizas
-        bool SetPoliza(int idAsegurados, int idSeguro);
-        //List<PolizaVM> GetAllPolizas(string cedula, int idSeguro);
+        //bool SetPoliza(int idAsegurados, int idSeguro);
+        bool SetPoliza(SetPolizas setPolizas);
+        List<PolizaVM> GetAllPolizas(string cedula, string Codigo);
         #endregion
     }
 }

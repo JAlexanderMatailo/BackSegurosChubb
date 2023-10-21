@@ -59,10 +59,24 @@ namespace BackSegurosChubb.Controllers
 
         #region Polizas
         [HttpPost("SetPoliza")]
-        public IActionResult SetPoliza(int idAsegurados, int idSeguro)
+        public IActionResult SetPoliza(SetPolizas setPolizas)
         {
-            var result = _seguro.SetPoliza(idAsegurados, idSeguro);
+            //var result = _seguro.SetPoliza(setPolizas.idAsegurados, 0);
+            var result = _seguro.SetPoliza(setPolizas);
             return new JsonResult(result);
+        }
+
+        [HttpPost("GetAllPolizas")]
+        public IActionResult GetAllPolizas(string? cedula, string? Codigo)
+        {
+            if (cedula == null)
+            {
+                cedula = string.Empty;
+                var result = _seguro.GetAllPolizas(cedula, Codigo);
+                return new JsonResult(result);
+            }
+
+            return new JsonResult("");
         }
         #endregion
     }

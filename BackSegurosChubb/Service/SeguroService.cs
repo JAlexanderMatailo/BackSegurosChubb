@@ -2,6 +2,7 @@
 using BackSegurosChubb.Models;
 using BackSegurosChubb.ViewModel;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace BackSegurosChubb.Service
 {
@@ -49,7 +50,7 @@ namespace BackSegurosChubb.Service
                             context.Commit();
                             registrado = true;
                         }
-                        catch (Exception ex)
+                        catch (Exception )
                         {
                             context.Rollback();
                             registrado = false;
@@ -219,35 +220,56 @@ namespace BackSegurosChubb.Service
         #endregion
 
         #region Poliza
-        public bool SetPoliza(int idAsegurados, int idSeguro)
+        //public bool SetPoliza(int idAsegurados, int idSeguro)
+        public bool SetPoliza(SetPolizas setPolizas)
         {
             bool registrado = false;
-            using (var context = _context.Database.BeginTransaction())
-            {
-                try
-                {
-                    Poliza poliza = new Poliza
-                    {
-                        IdAsegurados = idAsegurados,
-                        IdSeguros = idSeguro,
-                        Estado = "A"
-                    };
 
-                    _context.Polizas.Add(poliza);
-                    _context.SaveChanges();
-                    context.Commit();
-                    registrado = true;
-                }
-                catch (Exception)
+            if (setPolizas.seguros != null)
+            {
+                using (var context = _context.Database.BeginTransaction())
                 {
-                    context.Rollback();
-                    throw;
+                    try
+                    {
+                        foreach (var seguroID in setPolizas.seguros)
+                        {
+                            if (int.TryParse(seguroID, out int idSeguro))
+                            {
+                                Poliza poliza = new Poliza
+                                {
+                                    IdAsegurados = setPolizas.idAsegurados,
+                                    IdSeguros = idSeguro,
+                                    Estado = "A"
+                                };
+
+                                _context.Polizas.Add(poliza);
+                            }
+                            else
+                            {
+                                Console.WriteLine($"No se pudo convertir '{seguroID}' en un número entero.");
+                            }
+                        }
+
+                        _context.SaveChanges();
+                        context.Commit();
+                        registrado = true;
+                    }
+                    catch (Exception)
+                    {
+                        context.Rollback();
+                        registrado = false;
+                    }
                 }
             }
+            else
+            {
+                Console.WriteLine("La lista de seguros está vacía o nula.");
+            }
+
             return registrado;
         }
 
-        public List<PolizaVM> GetaAllPoliza()
+        public List<PolizaVM> GetAllPoliza()
         {
             List<PolizaVM> Polizas = new List<PolizaVM>();
             PolizaVM poliza = new PolizaVM();
@@ -298,6 +320,181 @@ namespace BackSegurosChubb.Service
             return Polizas;
         }
 
+        public List<PolizaVM> GetPolizaByCedula(string cedula)
+        {
+            List<PolizaVM> polizas = new List<PolizaVM>();
+            PolizaVM polizaVM = new PolizaVM();
+
+            using (var context = _context.Database.BeginTransaction())
+            {
+                var seguros = (
+                    from pol in _context.Polizas
+                    join per in _context.Personas on pol.IdAsegurados equals per.IdAsegurados
+                    join seg in _context.Seguros on pol.IdSeguros equals seg.IdSeguros
+                    where (pol.Estado == "A" && per.Cedula == cedula)
+                    select new
+                    {
+                        pol.IdSeguros,
+                        pol.IdAsegurados,
+                        pol.IdPoliza,
+                        per.Cedula,
+                        per.NombreCliente,
+                        seg.NombreSeguro,
+                        seg.Codigo,
+                        seg.SumaAsegurada,
+                        seg.Prima,
+                        pol.Estado
+                    }
+                    ).ToList();
+                if (seguros != null)
+                {
+                    foreach (var seguro in seguros)
+                    {
+                        polizaVM = new PolizaVM
+                        {
+                            IdPoliza = seguro.IdPoliza,
+                            IdAsegurados = seguro.IdAsegurados,
+                            IdSeguros = seguro.IdSeguros,
+                            cedulaPersona = seguro.Cedula,
+                            NombrePersona = seguro.NombreCliente,
+                            DescricionSeguro = seguro.NombreSeguro,
+                            CodigoSeguro = seguro.Codigo,
+                            ValorAsegurado = Convert.ToDecimal(seguro.SumaAsegurada),
+                            Prima = Convert.ToDecimal(seguro.Prima),
+                            Estado = seguro.Estado
+                        };
+                        polizas.Add(polizaVM);
+                    }
+
+                }
+            }
+            return polizas;
+        }
+
+        public List<PolizaVM> GetPolizasByCodigoSeguro(string Codigo)
+        {
+            List<PolizaVM> polizas = new List<PolizaVM>();
+            PolizaVM polizaVM = new PolizaVM();
+
+            using (var context = _context.Database.BeginTransaction())
+            {
+                var seguros = (
+                    from pol in _context.Polizas
+                    join per in _context.Personas on pol.IdAsegurados equals per.IdAsegurados
+                    join seg in _context.Seguros on pol.IdSeguros equals seg.IdSeguros
+                    where (pol.Estado == "A" && seg.Codigo == Codigo)
+                    select new
+                    {
+                        pol.IdSeguros,
+                        pol.IdAsegurados,
+                        pol.IdPoliza,
+                        per.Cedula,
+                        per.NombreCliente,
+                        seg.NombreSeguro,
+                        seg.Codigo,
+                        seg.SumaAsegurada,
+                        seg.Prima,
+                        pol.Estado
+                    }
+                    ).ToList();
+                if (seguros != null)
+                {
+                    foreach (var seguro in seguros)
+                    {
+                        polizaVM = new PolizaVM
+                        {
+                            IdPoliza = seguro.IdPoliza,
+                            IdAsegurados = seguro.IdAsegurados,
+                            IdSeguros = seguro.IdSeguros,
+                            cedulaPersona = seguro.Cedula,
+                            NombrePersona = seguro.NombreCliente,
+                            DescricionSeguro = seguro.NombreSeguro,
+                            CodigoSeguro = seguro.Codigo,
+                            ValorAsegurado = Convert.ToDecimal(seguro.SumaAsegurada),
+                            Prima = Convert.ToDecimal(seguro.Prima),
+                            Estado = seguro.Estado
+                        };
+                        polizas.Add(polizaVM);
+                    }
+
+                }
+            }
+            return polizas;
+
+        }
+
+        public List<PolizaVM> GetPolizasPorByAmbosFiltros(string cedula, string Codigo)
+        {
+            List<PolizaVM> polizas = new List<PolizaVM>();
+            PolizaVM polizaVM = new PolizaVM();
+
+            using (var context = _context.Database.BeginTransaction())
+            {
+                var seguros = (
+                    from pol in _context.Polizas
+                    join per in _context.Personas on pol.IdAsegurados equals per.IdAsegurados
+                    join seg in _context.Seguros on pol.IdSeguros equals seg.IdSeguros
+                    where (pol.Estado == "A" && per.Cedula == cedula && seg.Codigo == Codigo)
+                    select new
+                    {
+                        pol.IdSeguros,
+                        pol.IdAsegurados,
+                        pol.IdPoliza,
+                        per.Cedula,
+                        per.NombreCliente,
+                        seg.NombreSeguro,
+                        seg.Codigo,
+                        seg.SumaAsegurada,
+                        seg.Prima,
+                        pol.Estado
+                    }
+                    ).ToList();
+                if (seguros != null)
+                {
+                    foreach (var seguro in seguros)
+                    {
+                        polizaVM = new PolizaVM
+                        {
+                            IdPoliza = seguro.IdPoliza,
+                            IdAsegurados = seguro.IdAsegurados,
+                            IdSeguros = seguro.IdSeguros,
+                            cedulaPersona = seguro.Cedula,
+                            NombrePersona = seguro.NombreCliente,
+                            DescricionSeguro = seguro.NombreSeguro,
+                            CodigoSeguro = seguro.Codigo,
+                            ValorAsegurado = Convert.ToDecimal(seguro.SumaAsegurada),
+                            Prima = Convert.ToDecimal(seguro.Prima),
+                            Estado = seguro.Estado
+                        };
+                        polizas.Add(polizaVM);
+                    }
+                }
+            }
+            return polizas;
+        }
+
+
+        public List<PolizaVM> GetAllPolizas(string cedula, string Codigo)
+        {
+            if (!string.IsNullOrEmpty(cedula) && !string.IsNullOrEmpty(Codigo))
+            {
+                return GetPolizasPorByAmbosFiltros(cedula, Codigo);
+
+            }
+            else if (!string.IsNullOrEmpty(cedula))
+            {
+                return GetPolizaByCedula(cedula);
+
+            }
+            else if (!string.IsNullOrEmpty(Codigo))
+            {
+                return GetPolizasByCodigoSeguro(Codigo);
+            }
+            else
+            {
+                return GetAllPoliza();
+            }
+        }
 
         #endregion
     }

@@ -29,11 +29,10 @@ public partial class PruebaSegurosChubbContext : DbContext
     {
         modelBuilder.Entity<Persona>(entity =>
         {
-            entity.HasKey(e => e.IdAsegurados).HasName("PK__Persona__0B3E9C99BB9740EC");
+            entity.HasKey(e => e.IdAsegurados).HasName("PK__Persona__C2D8379E97CCF92A");
 
             entity.ToTable("Persona");
 
-            entity.Property(e => e.IdAsegurados).HasColumnName("Id_Asegurados");
             entity.Property(e => e.Cedula)
                 .HasMaxLength(10)
                 .IsUnicode(false);
@@ -51,32 +50,28 @@ public partial class PruebaSegurosChubbContext : DbContext
 
         modelBuilder.Entity<Poliza>(entity =>
         {
-            entity.HasKey(e => e.IdPoliza).HasName("PK__Polizas__A93FD36DDBC89EAC");
+            entity.HasKey(e => e.IdPoliza).HasName("PK__Polizas__8E3943B3D70DA2E1");
 
-            entity.Property(e => e.IdPoliza).HasColumnName("Id_Poliza");
             entity.Property(e => e.Estado)
                 .HasMaxLength(1)
                 .IsUnicode(false)
                 .IsFixedLength();
-            entity.Property(e => e.IdAsegurados).HasColumnName("Id_Asegurados");
-            entity.Property(e => e.IdSeguros).HasColumnName("Id_Seguros");
 
             entity.HasOne(d => d.IdAseguradosNavigation).WithMany(p => p.Polizas)
                 .HasForeignKey(d => d.IdAsegurados)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Polizas__Id_Aseg__3C69FB99");
+                .HasConstraintName("FK__Polizas__IdAsegu__5441852A");
 
             entity.HasOne(d => d.IdSegurosNavigation).WithMany(p => p.Polizas)
                 .HasForeignKey(d => d.IdSeguros)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Polizas__Id_Segu__3B75D760");
+                .HasConstraintName("FK__Polizas__IdSegur__534D60F1");
         });
 
         modelBuilder.Entity<Seguro>(entity =>
         {
-            entity.HasKey(e => e.IdSeguros).HasName("PK__Seguros__EEC37FDAE6843247");
+            entity.HasKey(e => e.IdSeguros).HasName("PK__Seguros__A0A46E3B47AB44C6");
 
-            entity.Property(e => e.IdSeguros).HasColumnName("Id_Seguros");
             entity.Property(e => e.Codigo)
                 .HasMaxLength(50)
                 .IsUnicode(false);

@@ -70,7 +70,6 @@ namespace BackSegurosChubb.Service
         {
             List<SeguroVM> listaSeguros = new List<SeguroVM>();
             var seguros = _context.Seguros.Where(x => x.Estado == "A").ToList();
-            //var seguros = _context.Seguros.ToList();
             foreach (var seguro in seguros)
             {
                 try

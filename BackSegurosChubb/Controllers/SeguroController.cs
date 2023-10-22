@@ -61,7 +61,6 @@ namespace BackSegurosChubb.Controllers
         [HttpPost("SetPoliza")]
         public IActionResult SetPoliza(SetPolizas setPolizas)
         {
-            //var result = _seguro.SetPoliza(setPolizas.idAsegurados, 0);
             var result = _seguro.SetPoliza(setPolizas);
             return new JsonResult(result);
         }

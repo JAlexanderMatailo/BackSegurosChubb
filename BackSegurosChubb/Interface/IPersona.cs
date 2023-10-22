@@ -14,11 +14,7 @@ namespace BackSegurosChubb.Interface
         #endregion
 
         #region Excel
-
         List<PersonaVM> setArchivoExcel(ExcelVM ArchivoExcel);
-
-        void addPersonas(List<PersonaVM> lista);
-
         #endregion
 
 

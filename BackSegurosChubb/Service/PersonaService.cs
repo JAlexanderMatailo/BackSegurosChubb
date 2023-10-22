@@ -234,23 +234,13 @@ namespace BackSegurosChubb.Service
                     }
                 }
 
-                return null; // O devuelve una lista vacía si lo prefieres en lugar de null
+                return null; 
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al procesar el archivo Excel: " + ex.Message);
-                return null; // O devuelve una lista vacía si lo prefieres en lugar de null
+                return null;
             }
-        }
-
-
-        public void addPersonas(List<PersonaVM> lista)
-        {
-            foreach (var persona in lista)
-            {
-                SetPersona(persona);
-            }
-
         }
 
         #endregion

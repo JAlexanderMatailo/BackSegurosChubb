@@ -62,9 +62,8 @@ namespace BackSegurosChubb.Controllers
             var result = _persona.setArchivoExcel(ArchivoExcel);
             return new JsonResult(result);
         }
-    }
-
-
         #endregion
     }
+
+}
 

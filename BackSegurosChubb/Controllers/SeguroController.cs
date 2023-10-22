@@ -2,6 +2,9 @@
 using BackSegurosChubb.Models;
 using BackSegurosChubb.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
+using System.IO;
 
 namespace BackSegurosChubb.Controllers
 {
@@ -70,13 +73,43 @@ namespace BackSegurosChubb.Controllers
         {
             if (cedula == null)
             {
-                cedula = string.Empty;
-                var result = _seguro.GetAllPolizas(cedula, Codigo);
-                return new JsonResult(result);
+                cedula = string.Empty;                
             }
+            var result = _seguro.GetAllPolizas(cedula, Codigo);
+            return new JsonResult(result);
 
-            return new JsonResult("");
         }
+
         #endregion
+
+        [HttpGet("GetFormato")]
+        public IActionResult GetFormato()
+        {
+            var result = ConvertExcelToBase64();
+            return new JsonResult(result);
+        }
+
+        private  string ConvertExcelToBase64()
+        {
+
+            string base64 = String.Empty;
+            
+            string path = Path.GetFullPath("../BackSegurosChubb/Formato/ExcelPrueba.xlsx");
+
+            byte[] docBytes = null;
+
+            using (StreamReader strm = new StreamReader(path))
+            {
+                Stream s = strm.BaseStream;
+                BinaryReader r = new BinaryReader(s);
+                docBytes = r.ReadBytes(Convert.ToInt32(r.BaseStream.Length));
+                base64 = Convert.ToBase64String(docBytes);
+                r.Close();
+                s.Close();
+                strm.Close();
+            }
+            return base64;
+
+        }
     }
 }

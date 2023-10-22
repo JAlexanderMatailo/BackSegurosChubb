@@ -1,6 +1,14 @@
 ﻿using BackSegurosChubb.Interface;
 using BackSegurosChubb.Models;
 using BackSegurosChubb.ViewModel;
+using Microsoft.AspNetCore.Mvc;
+
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
+using System.Diagnostics.Contracts;
+using System.Diagnostics;
+using EFCore.BulkExtensions;
 
 namespace BackSegurosChubb.Service
 {
@@ -15,7 +23,7 @@ namespace BackSegurosChubb.Service
         {
             return cedula.Length == 10;
         }
-
+        #region Persona
         public bool SetPersona(PersonaVM persona)
         {
             if (EsCedulaValido(persona.Cedula))
@@ -59,7 +67,6 @@ namespace BackSegurosChubb.Service
         {
             List<PersonaVM> listPersonas = new List<PersonaVM>();
             var persona = _context.Personas.Where(x => x.Estado == "A").ToList();
-            //var persona = _context.Personas.ToList();
             foreach (var personas in persona)
             {
                 try
@@ -167,6 +174,91 @@ namespace BackSegurosChubb.Service
             return eliminado;
         }
 
+        #endregion
 
+        #region Excel
+
+        public List<PersonaVM> setArchivoExcel(ExcelVM ArchivoExcel)
+        {
+            try
+            {
+                byte[] excelBytes = Convert.FromBase64String(ArchivoExcel.File);
+
+                using (MemoryStream ms = new MemoryStream(excelBytes))
+                {
+                    IWorkbook MiExcel = new XSSFWorkbook(ms);
+
+                    if (MiExcel != null)
+                    {
+                        ISheet HojaExcel = MiExcel.GetSheetAt(0);
+                        if (HojaExcel != null)
+                        {
+                            int cantidadFilas = HojaExcel.LastRowNum;
+                            List<PersonaVM> lista = new List<PersonaVM>();
+
+                            for (int i = 1; i <= cantidadFilas; i++)
+                            {
+                                IRow fila = HojaExcel.GetRow(i);
+
+                                if (fila != null)
+                                {
+                                    lista.Add(new PersonaVM
+                                    {
+                                        Cedula = fila.GetCell(0)?.ToString() ?? "",
+                                        NombreCliente = fila.GetCell(1)?.ToString() ?? "",
+                                        Telefono = fila.GetCell(2)?.ToString() ?? "",
+                                        Edad = int.TryParse(fila.GetCell(3)?.ToString(), out int edad) ? edad : 0
+                                    });
+                                    foreach (var persona in lista)
+                                    {
+                                        SetPersona(persona);
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Fila nula en el archivo Excel.");
+                                }
+                            }
+
+                            return lista;
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("No se encontraron hojas en el archivo Excel.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("El objeto MiExcel no se ha inicializado correctamente.");
+                    }
+                }
+
+                return null; // O devuelve una lista vacía si lo prefieres en lugar de null
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error al procesar el archivo Excel: " + ex.Message);
+                return null; // O devuelve una lista vacía si lo prefieres en lugar de null
+            }
+        }
+
+
+        public void addPersonas(List<PersonaVM> lista)
+        {
+            foreach (var persona in lista)
+            {
+                SetPersona(persona);
+            }
+
+        }
+
+        #endregion
     }
+
+
+
+
+
 }
+

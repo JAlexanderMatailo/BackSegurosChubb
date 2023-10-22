@@ -1,6 +1,10 @@
 ﻿using BackSegurosChubb.Interface;
+using BackSegurosChubb.Service;
 using BackSegurosChubb.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace BackSegurosChubb.Controllers
 {
@@ -14,6 +18,8 @@ namespace BackSegurosChubb.Controllers
         {
             _persona = persona;
         }
+
+        #region Persona
         [HttpPost("SetPersona")]
         public IActionResult SetPersona(PersonaVM persona)
         {
@@ -46,5 +52,19 @@ namespace BackSegurosChubb.Controllers
             var result = _persona.DeletePersona(id);
             return new JsonResult(result);
         }
+        #endregion
+
+        #region Excel
+
+        [HttpPost("SetExcel")]
+        public IActionResult SetExcel( ExcelVM ArchivoExcel)
+        {
+            var result = _persona.setArchivoExcel(ArchivoExcel);
+            return new JsonResult(result);
+        }
     }
-}
+
+
+        #endregion
+    }
+

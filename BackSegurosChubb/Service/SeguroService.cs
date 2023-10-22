@@ -199,7 +199,7 @@ namespace BackSegurosChubb.Service
                     {
                         if (seguroExiste != null)
                         {
-                            seguroExiste.Estado = "I"; //inactivo
+                            seguroExiste.Estado = "I";
 
                             _context.SaveChanges();
                             context.Commit();
@@ -233,14 +233,31 @@ namespace BackSegurosChubb.Service
                         {
                             if (int.TryParse(seguroID, out int idSeguro))
                             {
-                                Poliza poliza = new Poliza
+                                var existePoliza = _context.Polizas.Where(x => x.IdSeguros == idSeguro && x.IdAsegurados == setPolizas.idAsegurados).Any();
+                                try
                                 {
-                                    IdAsegurados = setPolizas.idAsegurados,
-                                    IdSeguros = idSeguro,
-                                    Estado = "A"
-                                };
-
-                                _context.Polizas.Add(poliza);
+                                    if (!existePoliza)
+                                    {
+                                    
+                                        Poliza poliza = new Poliza
+                                        {
+                                            IdAsegurados = setPolizas.idAsegurados,
+                                            IdSeguros = idSeguro,
+                                            Estado = "A"
+                                        };
+                                        _context.Polizas.Add(poliza);
+                                    
+                                    }
+                                    else
+                                    {
+                                        registrado = false;
+                                    }
+                                }
+                                catch (Exception)
+                                {
+                                    context.Rollback();
+                                    registrado = false;
+                                }
                             }
                             else
                             {
@@ -262,6 +279,7 @@ namespace BackSegurosChubb.Service
             else
             {
                 Console.WriteLine("La lista de seguros está vacía o nula.");
+                registrado = false;
             }
 
             return registrado;

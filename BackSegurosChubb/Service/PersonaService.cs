@@ -19,17 +19,21 @@ namespace BackSegurosChubb.Service
             _context = context;
         }
 
-        public bool EsCedulaValido(string cedula)
+        public bool EsCedulaValido(string Cedula)
         {
-            return cedula.Length == 10;
+            return Cedula.Length == 10;
+        }
+        public bool EsTelefonoValido(string Telefono)
+        {
+            return Telefono.Length == 10;
         }
         #region Persona
         public bool SetPersona(PersonaVM persona)
         {
-            if (EsCedulaValido(persona.Cedula))
+            if (EsCedulaValido(persona.Cedula) && EsTelefonoValido(persona.Telefono))
             {
                 var existe = _context.Personas.Where(x => x.Cedula == persona.Cedula).Any();
-                bool registrado = true;
+                bool registrado = false;
                 if (!existe)
                 {
                     using (var context = _context.Database.BeginTransaction())
